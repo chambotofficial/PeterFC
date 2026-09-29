@@ -59566,13 +59566,13 @@ class Match {
  constructor(opts={}) {
   this.opts={difficulty:1,duration:300,multi:false,ratings:[75,75],...opts}; this.players=[];this.score=[0,0];this.elapsed=0;this.half=1;this.phase='kickoff';this.phaseTime=2.4;this.event={label:'PIERWSZY GWIZDEK',team:0};this.ball={x:0,z:0,y:.23,vx:0,vz:0,vy:0,owner:null,lastTouch:0,lock:-1,lockTime:0,shot:false};
   this.controlled=[9,20];this.manualLock=[0,0];this.stats=[{shots:0,onTarget:0,passes:0,complete:0,saves:0,possession:0},{shots:0,onTarget:0,passes:0,complete:0,saves:0,possession:0}];this.simTime=0;this.touchCooldown=0;this.lastPass=null;this.onEvent=()=>{};this.kickoffTeam=0;this.restartData=null;this.lastScorer=null;this.totalGoals=0;this.cornerPassRequiredTeam=null;this.goalNetSide=0;
-  for(let t=0;t<2;t++)for(let i=0;i<11;i++)this.players.push({id:t*11+i,team:t,slot:i,keeper:i===0,number:NUMBERS[i],name:NAMES[(i+t*4)%11],role:ROLES[i],x:0,z:0,vx:0,vz:0,fx:t===0?1:-1,fz:0,angle:t===0?Math.PI/2:-Math.PI/2,stamina:1,think:Math.random()*.6,kick:0,tackle:0,stun:0,dive:0,diveDir:1,celebrate:0,speed:0,target:null});
+  for(let t=0;t<2;t++)for(let i=0;i<11;i++)this.players.push({id:t*11+i,team:t,slot:i,keeper:i===0,number:NUMBERS[i],name:NAMES[(i+t*4)%11],role:ROLES[i],x:0,z:0,vx:0,vz:0,fx:t===0?1:-1,fz:0,angle:t===0?Math.PI/2:-Math.PI/2,stamina:1,think:Math.random()*.6,kick:0,tackle:0,stun:0,dive:0,diveDuration:1.04,diveDir:1,diveHeight:1.15,celebrate:0,speed:0,target:null});
   this.resetPositions(0);
  }
  direction(t){return(t===0?1:-1)*(this.half===1?1:-1)}
  human(t){return t===0||this.opts.multi}
  resetPositions(team){
-  for(const p of this.players){const d=this.direction(p.team);p.x=FORM[p.slot][0]*d;p.z=FORM[p.slot][1]*d;p.vx=p.vz=p.speed=0;p.fx=d;p.fz=0;p.angle=Math.atan2(d,0);p.dive=p.stun=p.kick=p.tackle=p.celebrate=0;if(p.slot>=8)p.x=-5*d;}
+  for(const p of this.players){const d=this.direction(p.team);p.x=FORM[p.slot][0]*d;p.z=FORM[p.slot][1]*d;p.vx=p.vz=p.speed=0;p.fx=d;p.fz=0;p.angle=Math.atan2(d,0);p.dive=p.stun=p.kick=p.tackle=p.celebrate=0;p.diveDuration=1.04;p.diveHeight=1.15;if(p.slot>=8)p.x=-5*d;}
   const p=this.players[team*11+9];p.x=-.7*this.direction(team);p.z=0;const q=this.players[team*11+6];q.x=-3*this.direction(team);q.z=3;
   Object.assign(this.ball,{x:0,z:0,y:.23,vx:0,vz:0,vy:0,owner:p.id,lastTouch:team,lock:-1,lockTime:0,shot:false});this.controlled=[9,20];this.kickoffTeam=team;this.lastPass=null;this.touchCooldown=.6;this.cornerPassRequiredTeam=null;this.goalNetSide=0;
  }
@@ -59646,6 +59646,40 @@ class Match {
   if(b.owner!==null&&this.players[b.owner].team!==p.team&&dist(p,b)<reach){const other=this.players[b.owner];if(!other.shield||Math.random()>.55){other.stun=.42;this.possession(p);this.onEvent({type:'tackle',team:p.team})}}
   return true;
  }
+ keeperPose(p){
+  const d=this.direction(p.team),diving=p.dive>0,dur=p.diveDuration||1.04;
+  const progress=diving?clamp(1-p.dive/dur,0,1):0;
+  const takeoff=clamp(progress/.22,0,1),extend=clamp((progress-.08)/.52,0,1),land=clamp((progress-.70)/.30,0,1);
+  const reach=extend*extend*(3-2*extend),flight=Math.sin(progress*Math.PI),side=p.diveDir||1;
+  const targetY=clamp(p.diveHeight||1.15,.42,2.18);
+  const handY=diving?lerp(1.28,targetY,reach)+flight*.08:1.34;
+  const handX=p.x+d*(diving?.25+.12*reach:.28);
+  const lateral=diving?side*(.40+1.00*reach):0;
+  return {diving,progress,takeoff,reach,flight,land,side,targetY,
+   hands:[
+    {name:'handA',x:handX,z:p.z+lateral+side*.10,y:handY+.11,rx:.31,rz:.30,ry:.28},
+    {name:'handB',x:handX-d*.03,z:p.z+lateral-side*.12,y:handY-.12,rx:.31,rz:.31,ry:.29}
+   ],
+   torso:{name:'torso',x:p.x+d*.04,z:p.z+(diving?side*.20*reach:0),y:diving?.96+flight*.18:1.00,rx:.34,rz:.33,ry:.63},
+   legs:{name:'legs',x:p.x-d*.04,z:p.z-(diving?side*.18*reach:0),y:.43+flight*.05,rx:.34,rz:.42,ry:.40}
+  };
+ }
+ keeperContact(p,b,prev=null){
+  const pose=this.keeperPose(p),BALL_R=.125,start=prev||b;
+  const zones=[...pose.hands,pose.torso,pose.legs];
+  let best=null,bestMetric=Infinity,bestT=1;
+  for(const z of zones){
+   const rx=z.rx+BALL_R,rz=z.rz+BALL_R,ry=z.ry+BALL_R;
+   // Testujemy cały odcinek lotu piłki z tej klatki, a nie tylko jej końcową pozycję. Dzięki temu szybki strzał nie „przeskoczy” przez rękawicę.
+   const sx=(start.x-z.x)/rx,sz=(start.z-z.z)/rz,sy=(start.y-z.y)/ry;
+   const ex=(b.x-z.x)/rx,ez=(b.z-z.z)/rz,ey=(b.y-z.y)/ry;
+   const vx=ex-sx,vz=ez-sz,vy=ey-sy,den=vx*vx+vz*vz+vy*vy;
+   const t=den>.000001?clamp(-(sx*vx+sz*vz+sy*vy)/den,0,1):1;
+   const dx=sx+vx*t,dz=sz+vz*t,dy=sy+vy*t,metric=dx*dx+dz*dz+dy*dy;
+   if(metric<=1&&metric<bestMetric){best=z;bestMetric=metric;bestT=t;}
+  }
+  return best?{zone:best,pose,metric:bestMetric,t:bestT,point:{x:lerp(start.x,b.x,bestT),z:lerp(start.z,b.z,bestT),y:lerp(start.y,b.y,bestT)}}:null;
+ }
  ai(p,dt,ranks){
   const b=this.ball,d=this.direction(p.team),difficulty=DIFF[this.opts.difficulty],cpu=!this.human(p.team),skill=cpu?difficulty.pace:.96;
   p.think-=dt;
@@ -59655,9 +59689,10 @@ class Match {
    let tz=clamp(b.z*.28,-3.05,3.05);
    if(b.owner===null&&b.vx*d<0){
     const goalX=-d*49.35,time=(goalX-b.x)/(b.vx||.0001);
-    if(time>0&&time<(cpu?.50+this.opts.difficulty*.07:.62)){
+    if(time>0&&time<(cpu?.58+this.opts.difficulty*.075:.70)){
      tz=clamp(b.z+b.vz*time,-3.28,3.28);
-     if(time<.62&&Math.abs(tz-p.z)>.68&&p.dive<=0){p.dive=.85;p.diveDir=Math.sign(tz-p.z)||1;}
+     const predictedY=clamp(b.y+b.vy*time-4.905*time*time,.36,2.24);
+     if(time<.70&&Math.abs(tz-p.z)>.54&&p.dive<=0){p.diveDuration=1.04;p.dive=1.04;p.diveDir=Math.sign(tz-p.z)||1;p.diveHeight=predictedY;}
     }
    }
    const dz=tz-p.z;
@@ -59719,7 +59754,7 @@ class Match {
    if(this.cornerPassRequiredTeam===p.team&&b.owner===p.id)input={x:0,z:0,sprint:false,shield:false};
    if(p.keeper)input={...input,x:0};
    let mag=Math.min(1,Math.hypot(input.x,input.z)),v=norm(input.x,input.z);const running=input.sprint&&p.stamina>.035;const rating=this.opts.ratings[p.team]||75;
-   let maxSpeed=(p.keeper?4.7:running?8.5:5.55)*(0.96+(rating-70)*.002)*(p.shield?.65:1);if(p.stun>0)maxSpeed*=.18;if(p.tackle>0)maxSpeed*=.7;
+   let maxSpeed=(p.keeper?(p.dive>0?6.15:4.7):running?8.5:5.55)*(0.96+(rating-70)*.002)*(p.shield?.65:1);if(p.stun>0)maxSpeed*=.18;if(p.tackle>0)maxSpeed*=.7;
    p.stamina=clamp(p.stamina+dt*(running&&mag>.1?-.07:.052),0,1);
    const smooth=1-Math.exp(-dt*(mag>.1?7.2:8.5));p.vx=lerp(p.vx,v.x*maxSpeed*mag,smooth);p.vz=lerp(p.vz,v.z*maxSpeed*mag,smooth);
    p.x=clamp(p.x+p.vx*dt,-53,53);p.z=clamp(p.z+p.vz*dt,-34.4,34.4);
@@ -59742,10 +59777,30 @@ class Match {
    if(this.touchCooldown===0){
     for(const p of this.players){if(p.id===b.lock&&b.lockTime>0||p.stun>0||p.kick>.25)continue;
      const dd=dist(p,b),speed=Math.hypot(b.vx,b.vz);
-     if(p.keeper&&p.x*this.direction(p.team)<-35&&Math.abs(p.z)<18&&b.y<2.5){const skill=this.human(p.team)?1:DIFF[this.opts.difficulty].keeper;const reach=(p.dive>0?1.35:.85)*skill;
-      if(dd<reach){if(b.shot&&speed>18&&Math.random()>(this.human(p.team)?.73:.52+this.opts.difficulty*.105)){p.stun=.65;p.dive=.65;continue;}if(b.shot){this.stats[p.team].saves++;p.dive=Math.max(.5,p.dive);this.onEvent({type:'save',team:p.team});}
-       if(speed>24&&Math.random()<.3){b.vx=-b.vx*.38;b.vz+=(b.z-p.z)*6;b.vy=3;b.lastTouch=p.team;b.shot=false;this.touchCooldown=.3;}
-       else{this.possession(p);p.think=.75;}break;}}
+     if(p.keeper&&p.x*this.direction(p.team)<-35&&Math.abs(p.z)<18&&b.y<2.62){
+      // Obrona następuje dopiero przy faktycznym kontakcie piłki z dłońmi, tułowiem albo nogami bramkarza.
+      const contact=this.keeperContact(p,b,before);
+      if(contact){
+       const wasShot=b.shot,zone=contact.zone,pose=contact.pose,impact=contact.point,d=this.direction(p.team);
+       if(wasShot){this.stats[p.team].saves++;this.onEvent({type:'save',team:p.team});}
+       const hand=zone.name==='handA'||zone.name==='handB';
+       // Przy paradzie zawsze widać odbicie od rękawic; stojąc bramkarz może złapać wolniejszą piłkę przy ciele.
+       const canCatch=!pose.diving&&speed<17.5&&(hand||zone.name==='torso')&&Math.abs(b.vz)<13;
+       if(canCatch){
+        this.possession(p);p.think=.72;
+       }else{
+        const nx=impact.x-zone.x,nz=impact.z-zone.z,ny=impact.y-zone.y,nl=Math.hypot(nx,nz,ny)||1;
+        const outward=d*Math.max(7.5,Math.abs(b.vx)*(hand?.48:.40));
+        // Piłka jest ustawiana dokładnie w punkcie kontaktu przy powierzchni rękawicy/ciała, więc wizualnie nie odbija się z pustej przestrzeni.
+        b.x=impact.x+nx/nl*.035;b.z=impact.z+nz/nl*.035;b.y=Math.max(.23,impact.y+ny/nl*.035);
+        b.vx=outward;
+        b.vz=b.vz*.22+(nz/nl)*Math.max(5.5,speed*.32)+(pose.diving?pose.side*2.2:0);
+        b.vy=Math.max(1.15,Math.abs(b.vy)*.28+(ny/nl)*3.2+(hand?.75:.25));
+        b.lastTouch=p.team;b.shot=false;b.owner=null;b.lock=p.id;b.lockTime=.22;this.touchCooldown=.18;
+        if(pose.diving)p.dive=Math.max(p.dive,.34);
+       }
+       break;
+      }}
      else if(!p.keeper&&b.y<1.05&&dd<.92){if(b.shot&&speed>14){b.vx*=.45;b.vz+=(b.z-p.z)*7;b.vy=1.7;b.lastTouch=p.team;b.shot=false;p.stun=.18;this.touchCooldown=.16;break}else{this.possession(p);break;}}
      else if(!p.keeper&&b.y>1.05&&b.y<2.05&&b.vy<0&&dd<.65&&speed<17){this.possession(p);p.kick=.5;this.onEvent({type:'kick',kind:'header',team:p.team});break;}
     }
@@ -59897,23 +59952,33 @@ class Footballer {
  }
  setAnimation(name){if(name===this.state)return;const next=this.actions[name]||this.actions.Idle;if(!next)return;const previous=this.actions[this.state];if(previous&&previous!==next)previous.fadeOut(.28);next.enabled=true;if(!next.isRunning())next.reset().play();next.setEffectiveWeight(1).fadeIn(.28);this.state=name;}
  animate(p,dt,time){
-  const celebrate=p.celebrate>0;this.visualSpeed=lerp(this.visualSpeed,p.speed,1-Math.exp(-dt*5.0));
-  if(!celebrate){const s=this.visualSpeed;if(this.locomotion==='Run'){if(s<2.05)this.locomotion='Walk';}else if(this.locomotion==='Walk'){if(s>3.05)this.locomotion='Run';else if(s<.24)this.locomotion='Idle';}else{if(s>.55)this.locomotion=s>3.15?'Run':'Walk';}}
-  const animName=celebrate?'Clapping':this.locomotion;this.setAnimation(animName);const moving=animName==='Walk'||animName==='Run',a=this.actions[this.state];if(a)a.timeScale=celebrate?1:moving?clamp(this.visualSpeed/4.8,.52,1.65):.8;
+  const celebrate=p.celebrate>0,diving=p.keeper&&p.dive>0;this.visualSpeed=lerp(this.visualSpeed,p.speed,1-Math.exp(-dt*5.0));
+  if(!celebrate&&!diving){const s=this.visualSpeed;if(this.locomotion==='Run'){if(s<2.05)this.locomotion='Walk';}else if(this.locomotion==='Walk'){if(s>3.05)this.locomotion='Run';else if(s<.24)this.locomotion='Idle';}else{if(s>.55)this.locomotion=s>3.15?'Run':'Walk';}}
+  // Podczas parady zatrzymujemy animację chodu/biegu pod spodem, żeby nogi nie „mieliły” w powietrzu.
+  const animName=celebrate?'Clapping':diving?'Idle':this.locomotion;this.setAnimation(animName);const moving=animName==='Walk'||animName==='Run',a=this.actions[this.state];if(a)a.timeScale=celebrate?1:diving?.28:moving?clamp(this.visualSpeed/4.8,.52,1.65):.8;
   for(const [bone,q]of this.kickPose)bone.quaternion.copy(q);this.kickPose=[];this.mixer.update(dt);if(p.kick>0){const f=1-p.kick/.48,ang=Math.sin(f*Math.PI)*1.15;const leg=this.bones.UpperLegR,knee=this.bones.LowerLegR;if(leg){this.kickPose.push([leg,leg.quaternion.clone()]);leg.rotateX(-ang)}if(knee){this.kickPose.push([knee,knee.quaternion.clone()]);knee.rotateX(Math.sin(f*Math.PI)*.62)}const arm=this.bones.UpperArmL;if(arm){this.kickPose.push([arm,arm.quaternion.clone()]);arm.rotateX(.35*ang)}}
   this.root.position.set(p.x,.03,p.z);this.root.rotation.y=lerpAngle(this.root.rotation.y,p.angle,1-Math.exp(-dt*13));
-  const diving=p.keeper&&p.dive>0;
   if(diving){
-   const progress=clamp(1-p.dive/.85,0,1),launch=Math.sin(progress*Math.PI),side=p.diveDir||1;
-   this.body.rotation.z=side*(.16+launch*.72);this.body.rotation.x=-launch*.10;this.body.position.y=(this.baseY||0)+.10+launch*.36;
+   const dur=p.diveDuration||1.04,progress=clamp(1-p.dive/dur,0,1),side=p.diveDir||1;
+   const smooth=t=>t*t*(3-2*t),take=smooth(clamp(progress/.20,0,1)),extend=smooth(clamp((progress-.08)/.48,0,1)),land=smooth(clamp((progress-.70)/.30,0,1));
+   const flight=Math.sin(progress*Math.PI),targetY=clamp(p.diveHeight||1.15,.42,2.18),high=clamp((targetY-.75)/1.45,0,1);
+   // 3 fazy: wybicie z nogi -> wyciągnięcie całego ciała i rękawic -> kontrolowane lądowanie na boku.
+   this.body.rotation.z=side*(.08*take+.96*extend-.13*land);
+   this.body.rotation.x=-.05*take-.13*flight+.08*land;
+   this.body.position.y=(this.baseY||0)+.035*take+flight*(.27+.12*high)-.055*land;
+   this.root.position.z+=side*(.05*take+.24*extend-.03*land);
    const poseBone=(name,rx=0,ry=0,rz=0)=>{const bone=this.bones[name];if(!bone)return;this.kickPose.push([bone,bone.quaternion.clone()]);if(rx)bone.rotateX(rx);if(ry)bone.rotateY(ry);if(rz)bone.rotateZ(rz);};
-   // Ramiona wyciągają się w kierunku parady, łokcie i nogi pracują osobno — bramkarz nie jest już jedną sztywną bryłą.
-   poseBone('UpperArmL',-1.00*launch,0,side*.58*launch);poseBone('LowerArmL',-.34*launch,0,side*.18*launch);
-   poseBone('UpperArmR',-1.00*launch,0,-side*.58*launch);poseBone('LowerArmR',-.34*launch,0,-side*.18*launch);
-   poseBone('Spine',-.10*launch,0,-side*.16*launch);poseBone('Spine1',-.10*launch,0,-side*.13*launch);
-   poseBone('UpperLegL',.24*launch,0,side*.18*launch);poseBone('LowerLegL',-.28*launch,0,0);
-   poseBone('UpperLegR',-.18*launch,0,-side*.22*launch);poseBone('LowerLegR',.20*launch,0,0);
-   this.root.position.z+=side*launch*.18;
+   // Ręce idą razem do piłki, ale z lekką różnicą ułożenia dłoni/łokci. Przy wysokiej piłce ramiona unoszą się mocniej.
+   const reachX=-.72-.38*extend-.22*high,armSide=.42+.40*extend;
+   poseBone('UpperArmL',reachX,0,side*armSide);poseBone('LowerArmL',-.18-.22*extend,0,side*(.10+.10*extend));
+   poseBone('UpperArmR',reachX+.05,0,-side*(.23+.24*extend));poseBone('LowerArmR',-.15-.20*extend,0,-side*(.07+.08*extend));
+   poseBone('HandL',-.10*extend,0,side*.10*extend);poseBone('HandR',-.10*extend,0,-side*.08*extend);
+   poseBone('Spine',-.08*flight,0,-side*(.10+.16*extend));poseBone('Spine1',-.08*flight,0,-side*(.08+.13*extend));poseBone('Torso',-.04*flight,0,-side*.08*extend);
+   // Noga po stronie wybicia prostuje się, druga zostaje lekko ugięta; przy lądowaniu obie miękną.
+   const lead=side>0?'R':'L',trail=side>0?'L':'R';
+   poseBone('UpperLeg'+lead,-.20*take+.15*land,0,-side*.18*extend);poseBone('LowerLeg'+lead,.12*take+.26*land,0,0);
+   poseBone('UpperLeg'+trail,.28*take+.22*flight,0,side*.16*extend);poseBone('LowerLeg'+trail,-.36*take-.16*flight+.25*land,0,0);
+   poseBone('Neck',.05*flight,0,-side*.08*extend);poseBone('Head',.03*flight,0,-side*.06*extend);
   }else{this.body.rotation.z=p.tackle>.3?-.42:0;this.body.rotation.x=0;this.body.position.y=this.baseY||0;}
   if(celebrate)this.root.position.y+=Math.max(0,Math.sin(time*6+p.id))*.13;
   this.plate.visible=p.dive<=0&&p.tackle<.3;this.indicator.rotation.y=-this.root.rotation.y;this.indicator.position.y=2.35+Math.sin(time*4)*.06;
