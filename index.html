@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#091115"><title>PETERFC 15 • Koniszewski Studio</title>
+<html lang="pl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#091115"><title>PeterFC18 • Koniszewski Studio</title>
 <style>
 :root{--ink:#091115;--panel:#102027;--lime:#c3fb55;--muted:#9cabb0;--white:#f7faf5;--line:#ffffff1c;--blue:#57bdff;--orange:#ffb66f}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--ink);color:var(--white);font-family:Inter,Arial,sans-serif}button,select,input{font:inherit}button{cursor:pointer;border:0;color:inherit}button:disabled{cursor:not-allowed;opacity:.35}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--lime);outline-offset:4px}button{transition:background .18s,transform .18s,box-shadow .18s}button:hover:not(:disabled){filter:brightness(1.13)}button:active:not(:disabled){transform:translateY(1px)}#world{position:absolute;inset:0;width:100%;height:100%;outline:0}.hidden{display:none!important}.eyebrow{font-size:10px;letter-spacing:2.2px;text-transform:uppercase;font-weight:700;color:var(--muted)}.display{font-family:Impact,'Arial Narrow',sans-serif;text-transform:uppercase;font-weight:400;letter-spacing:-1px;line-height:.96}.lime{color:var(--lime)}.icon-btn{height:38px;min-width:38px;border:1px solid var(--line);background:#0c171dc9;display:inline-flex;align-items:center;justify-content:center;border-radius:6px}.outline-btn{background:transparent;border:1px solid #ffffff36;border-radius:5px;padding:12px 18px;font-size:12px;font-weight:700}.primary{background:var(--lime);color:#152111;border-radius:5px;font-weight:900;padding:17px 22px;letter-spacing:1px;display:flex;align-items:center;justify-content:space-between;gap:35px;font-size:13px;min-height:52px}.primary .arrow{font-size:23px;line-height:15px}.secondary{background:#ffffff0b;border:1px solid var(--line);padding:14px 20px;border-radius:5px;text-align:left;font-weight:600;font-size:13px}.muted{color:var(--muted);font-size:12px;line-height:1.6}.key{display:inline-flex;align-items:center;justify-content:center;min-width:25px;height:23px;padding:0 6px;background:#ffffff13;border:1px solid #ffffff2e;border-radius:4px;font-size:11px;white-space:nowrap;color:white}.brand{font:italic 36px/1 Impact,'Arial Narrow',sans-serif;letter-spacing:-.6px}.brand span{color:var(--lime)}.brand small{font:700 9px Arial,sans-serif;letter-spacing:2px;display:block;margin-top:8px;color:#b3c0c3}.dot{width:6px;height:6px;display:inline-block;border-radius:50%;background:var(--lime);box-shadow:0 0 12px #c3fb5544;margin-right:7px}
 #menu{position:absolute;inset:0;background:linear-gradient(90deg,#071013fa 0%,#071013ec 26%,#071013cc 44%,#07101313 76%),linear-gradient(0deg,#091115ce,transparent 38%);padding:30px 3.5vw;display:flex;flex-direction:column;pointer-events:none}.menu-header{display:flex;justify-content:space-between;align-items:center;pointer-events:auto}.header-right{display:flex;align-items:center;gap:10px}.status{font-size:11px;letter-spacing:.5px;background:#0c171dbb;border:1px solid var(--line);padding:10px 14px;border-radius:30px}.menu-main{width:492px;max-width:48vw;pointer-events:auto;flex:1;display:flex;flex-direction:column;justify-content:center;padding:20px 0}.menu-main h1{font-size:clamp(36px,4.2vw,66px);margin:10px 0 20px;line-height:1}.menu-main h1 span{display:block;color:var(--lime)}.mode-tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:19px;gap:24px}.mode-tab{background:transparent;color:#879ba1;font-size:12px;font-weight:800;letter-spacing:1px;padding:12px 0;border-bottom:3px solid transparent;display:flex;gap:8px;align-items:center}.mode-tab.active{color:var(--white);border-color:var(--lime)}.mode-tag{font-size:9px;border:1px solid #ffffff29;padding:3px 5px;border-radius:3px}.club-row{display:grid;grid-template-columns:1fr 20px 1fr;align-items:center;gap:9px}.versus{font:italic 15px Impact;color:#6c8088;text-align:center}.club-card{background:linear-gradient(130deg,#1c3036b8,#101e23d9);border:1px solid var(--line);border-radius:7px;padding:15px 13px 12px;min-width:0;position:relative;overflow:hidden}.club-card:before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--club,#ffdf36)}.club-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.club-card .eyebrow{font-size:8px;letter-spacing:1.8px}.club-rating{font-size:9px;color:#9aabad}.club-rating strong{font-size:12px;color:white}.club-art{height:61px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;margin-bottom:9px}.club-art svg{height:60px;width:53px;filter:drop-shadow(0 8px 8px #0006)}.club-art .kit{height:64px;width:64px}.club-card select{width:100%;background:#0a151c8a;border:1px solid #ffffff1a;color:white;border-radius:4px;padding:10px 7px;font-size:12px;font-weight:700}.club-card option,select option{background:#122129;color:white}.kit-toggle{display:flex;align-items:center;justify-content:space-between;margin-top:10px}.kit-toggle button{background:transparent;padding:3px;font-size:10px;color:#b6c4c9;letter-spacing:.3px}.swatch{height:7px;width:25px;border-radius:2px;display:inline-block;border:1px solid #fff3}.choices{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;margin:18px 0}.field-label{display:block;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#8ea1a6;margin:0 0 7px}.field-select{width:100%;background:#0d1c23b5;border:1px solid #ffffff20;border-radius:4px;color:white;padding:10px;font-size:12px}.start-btn{width:100%;margin-top:2px}.menu-note{font-size:10px;color:#889da5;line-height:1.55;margin:10px 0 0}.menu-footer{display:flex;justify-content:space-between;align-items:center;pointer-events:auto;gap:12px}.footer-links{display:flex;gap:20px}.footer-links button{background:transparent;font-size:11px;color:#adbfc5;padding:6px 0}.edition{font-size:9px;letter-spacing:1.7px;color:#728d97}.hero-caption{position:absolute;right:4vw;bottom:100px;text-align:right;pointer-events:none;max-width:42vw}.hero-caption h2{font-size:clamp(34px,4.8vw,74px);margin:10px 0 0;color:#ffffffcf}.hero-caption .eyebrow{color:#d0e0de}.hero-caption .hero-rule{width:50px;height:4px;background:var(--lime);margin:18px 0 15px auto}.hero-caption p{font-size:11px;letter-spacing:2px;color:#c2ceca;margin:0}.mode-description{font-size:11px;color:#95a9b1;min-height:17px;margin:0 0 12px}
@@ -59587,15 +59587,15 @@ class Match {
  constructor(opts={}) {
   this.opts={difficulty:1,duration:300,multi:false,ratings:[75,75],...opts}; this.players=[];this.score=[0,0];this.elapsed=0;this.half=1;this.phase='kickoff';this.phaseTime=2.4;this.event={label:'PIERWSZY GWIZDEK',team:0};this.ball={x:0,z:0,y:.23,vx:0,vz:0,vy:0,owner:null,lastTouch:0,lock:-1,lockTime:0,shot:false};
   this.controlled=[9,20];this.manualLock=[0,0];this.stats=[{shots:0,onTarget:0,passes:0,complete:0,saves:0,possession:0},{shots:0,onTarget:0,passes:0,complete:0,saves:0,possession:0}];this.simTime=0;this.touchCooldown=0;this.lastPass=null;this.onEvent=()=>{};this.kickoffTeam=0;this.restartData=null;this.lastScorer=null;this.totalGoals=0;this.cornerPassRequiredTeam=null;this.goalNetSide=0;
-  for(let t=0;t<2;t++)for(let i=0;i<11;i++)this.players.push({id:t*11+i,team:t,slot:i,keeper:i===0,number:NUMBERS[i],name:NAMES[(i+t*4)%11],role:ROLES[i],x:0,z:0,vx:0,vz:0,fx:t===0?1:-1,fz:0,angle:t===0?Math.PI/2:-Math.PI/2,stamina:1,think:Math.random()*.6,kick:0,tackle:0,stun:0,dive:0,diveDuration:1.18,diveDir:1,diveHeight:1.15,diveDistance:2.15,diveType:'side',celebrate:0,speed:0,target:null});
+  for(let t=0;t<2;t++)for(let i=0;i<11;i++)this.players.push({id:t*11+i,team:t,slot:i,keeper:i===0,number:NUMBERS[i],name:NAMES[(i+t*4)%11],role:ROLES[i],x:0,z:0,vx:0,vz:0,fx:t===0?1:-1,fz:0,angle:t===0?Math.PI/2:-Math.PI/2,stamina:1,think:Math.random()*.6,kick:0,tackle:0,stun:0,dive:0,diveDuration:1.18,diveDir:1,diveHeight:1.15,diveDistance:2.15,diveType:'side',keeperReact:0,keeperReactShot:-1,celebrate:0,speed:0,target:null});
   this.resetPositions(0);
  }
  direction(t){return(t===0?1:-1)*(this.half===1?1:-1)}
  human(t){return t===0||this.opts.multi}
  resetPositions(team){
-  for(const p of this.players){const d=this.direction(p.team);p.x=FORM[p.slot][0]*d;p.z=FORM[p.slot][1]*d;p.vx=p.vz=p.speed=0;p.fx=d;p.fz=0;p.angle=Math.atan2(d,0);p.dive=p.stun=p.kick=p.tackle=p.celebrate=0;p.diveDuration=1.18;p.diveHeight=1.15;p.diveDistance=2.15;p.diveType='side';p.keeperCapsules=null;if(p.slot>=8)p.x=-5*d;}
+  for(const p of this.players){const d=this.direction(p.team);p.x=FORM[p.slot][0]*d;p.z=FORM[p.slot][1]*d;p.vx=p.vz=p.speed=0;p.fx=d;p.fz=0;p.angle=Math.atan2(d,0);p.dive=p.stun=p.kick=p.tackle=p.celebrate=0;p.diveDuration=1.18;p.diveHeight=1.15;p.diveDistance=2.15;p.diveType='side';p.keeperReact=0;p.keeperReactShot=-1;p.keeperCapsules=null;if(p.slot>=8)p.x=-5*d;}
   const p=this.players[team*11+9];p.x=-.7*this.direction(team);p.z=0;const q=this.players[team*11+6];q.x=-3*this.direction(team);q.z=3;
-  Object.assign(this.ball,{x:0,z:0,y:.23,vx:0,vz:0,vy:0,owner:p.id,lastTouch:team,lock:-1,lockTime:0,shot:false});this.controlled=[9,20];this.kickoffTeam=team;this.lastPass=null;this.touchCooldown=.6;this.cornerPassRequiredTeam=null;this.goalNetSide=0;
+  Object.assign(this.ball,{x:0,z:0,y:.23,vx:0,vz:0,vy:0,owner:p.id,lastTouch:team,lock:-1,lockTime:0,shot:false,shotSeq:0});this.controlled=[9,20];this.kickoffTeam=team;this.lastPass=null;this.touchCooldown=.6;this.cornerPassRequiredTeam=null;this.goalNetSide=0;
  }
  current(team){return this.players[this.controlled[team]]}
  switchPlayer(team,axis=null){
@@ -59630,7 +59630,7 @@ class Match {
    const keeper=this.players[(1-p.team)*11];
    let tz=(Math.abs(dir.z)>.14?clamp(dir.z*3.0,-2.75,2.75):-Math.sign(keeper.z||Math.random()-.5)*(1.7+Math.random()*.85))+(Math.random()-.5)*towards*2;
    if(Math.abs(p.z)>14)tz=-Math.sign(p.z)*(1.5+Math.random()*.8);
-   target={x:d*53.6,z:tz};this.stats[p.team].shots++;if(Math.abs(tz)<3.55)this.stats[p.team].onTarget++;b.shot=true;this.lastScorer=p.id;
+   target={x:d*53.6,z:tz};this.stats[p.team].shots++;if(Math.abs(tz)<3.55)this.stats[p.team].onTarget++;b.shot=true;b.shotSeq=(b.shotSeq||0)+1;this.lastScorer=p.id;
   }else{
    const choices=this.players.filter(q=>q.team===p.team&&q.id!==p.id&&!q.keeper);
    let best=-1e9;
@@ -59778,28 +59778,44 @@ class Match {
    // czasu pozostałego do przecięcia płaszczyzny bramkarza (time-to-contact).
    let tz=clamp(b.z*.42,-3.28,3.28);
    let incoming=false,timeToKeeper=99,predictedY=1.10,keeperSkill=cpu?difficulty.keeper:1.0;
+
+   // PeterFC17: wyraźnie większy, naturalny czas reakcji bramkarza po NOWYM strzale.
+   // Bramkarz przez krótki moment po uderzeniu NIE zna jeszcze przewidywanego punktu strzału,
+   // nie koryguje ustawienia pod tor piłki i nie może rozpocząć parady.
+   // Opóźnienie jest celowo dużo większe niż w PeterFC16, żeby dało się go realnie pokonać.
+   if(!b.shot){p.keeperReact=0;p.keeperReactShot=-1;}
+   else if(p.keeperReactShot!==(b.shotSeq||0)){
+    p.keeperReactShot=b.shotSeq||0;
+    const keeperReactionBase=[.39,.34,.30,.26][this.opts.difficulty]??.34;
+    p.keeperReact=clamp(keeperReactionBase+(Math.random()-.5)*.035,.24,.41);
+   }
+   if(p.keeperReact>0)p.keeperReact=Math.max(0,p.keeperReact-dt);
+   const reacting=p.keeperReact<=0;
+
    if(b.owner===null&&b.vx*d<-.35){
     const keeperX=-d*49.35;
     timeToKeeper=(keeperX-b.x)/(b.vx||.0001);
     if(timeToKeeper>0&&timeToKeeper<2.6){
      incoming=true;
-     tz=clamp(b.z+b.vz*timeToKeeper,-3.48,3.48);
-     predictedY=clamp(b.y+b.vy*timeToKeeper-4.905*timeToKeeper*timeToKeeper,.24,2.36);
-     const gap=Math.abs(tz-p.z);
+     if(reacting||!b.shot){
+      tz=clamp(b.z+b.vz*timeToKeeper,-3.48,3.48);
+      predictedY=clamp(b.y+b.vy*timeToKeeper-4.905*timeToKeeper*timeToKeeper,.24,2.36);
+      const gap=Math.abs(tz-p.z);
 
-     // PeterFC15: dwa osobne typy interwencji.
-     // 1) Wysoka piłka blisko środka bramkarza -> pionowy wyskok z lekko uniesionymi rękami.
-     // 2) Piłka lecąca w bok -> dotychczasowa parada boczna z V14.
-     const highJump=predictedY>1.62&&gap<=.68;
-     const jumpLead=clamp(.325+(predictedY-1.62)*.035+(1-keeperSkill)*.012,.325,.375);
-     const diveLead=clamp(.335+gap*.018+(predictedY>1.72?.025:0)+(1-keeperSkill)*.018,.335,.415);
+      // Wysoka piłka środkiem -> pionowy wyskok. Piłka w bok -> parada boczna.
+      const highJump=predictedY>1.62&&gap<=.68;
+      const jumpLead=clamp(.325+(predictedY-1.62)*.035+(1-keeperSkill)*.012,.325,.375);
+      const diveLead=clamp(.335+gap*.018+(predictedY>1.72?.025:0)+(1-keeperSkill)*.018,.335,.415);
 
-     if(highJump&&timeToKeeper<=jumpLead&&p.dive<=0){
-      p.diveDuration=.86;p.dive=.86;p.diveDir=1;p.diveHeight=predictedY;p.diveDistance=0;p.diveType='highJump';
-     }else if(timeToKeeper<=diveLead&&gap>.50&&p.dive<=0){
-      p.diveDuration=1.18;p.dive=1.18;p.diveDir=Math.sign(tz-p.z)||1;p.diveHeight=predictedY;p.diveType='side';
-      // Zasięg odpowiada REALNEMU dystansowi, który pozostaje po ustawieniu się na nogach.
-      p.diveDistance=clamp(gap+.92,1.82,2.72);
+      if(highJump&&timeToKeeper<=jumpLead&&p.dive<=0){
+       p.diveDuration=.86;p.dive=.86;p.diveDir=1;p.diveHeight=predictedY;p.diveDistance=0;p.diveType='highJump';
+      }else if(timeToKeeper<=diveLead&&gap>.50&&p.dive<=0){
+       p.diveDuration=1.18;p.dive=1.18;p.diveDir=Math.sign(tz-p.z)||1;p.diveHeight=predictedY;p.diveType='side';
+       p.diveDistance=clamp(gap+.92,1.82,2.72);
+      }
+     }else{
+      // W krótkim czasie reakcji zachowuje aktualne ustawienie — nie śledzi jeszcze celu strzału.
+      tz=p.z;
      }
     }
    }
